@@ -1,0 +1,1 @@
+docker build . -t water-campaign && sudo docker run -d -h vgcamp --restart on-failure --name vgcamp --env-file .env -p 5000:5000 water-campaign
