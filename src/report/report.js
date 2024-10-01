@@ -2,9 +2,9 @@ const { title } = require("process");
 const {
   CallbackModel,
   CouponModel,
-  FormModel,
+ TransactionModel,
   OtpModel,
-  TransactionModel,
+  RedemptionModel,
   UserModel,
   VendorApiModel,
 } = require("../../database/index.model");
@@ -277,8 +277,8 @@ const payoutReport = async (page, pageSize,req) => {
     console.log(query)
     const dataRestrict = { __v: 0, _id: 0, createdAt: 0, updatedAt: 0 };
     const startIndex = (page - 1) * pageSize;
-    const totalCount = await TransactionModel.countDocuments(query);
-    const paginatedData = await TransactionModel.find(query, dataRestrict)
+    const totalCount = await RedemptionModel.countDocuments(query);
+    const paginatedData = await RedemptionModel.find(query, dataRestrict)
       .sort({ _id: -1 })
       .skip(startIndex)
       .limit(pageSize);
@@ -299,8 +299,8 @@ const sloganReport = async (page, pageSize) => {
     const query = {};
     const dataRestrict = { __v: 0, _id: 0, createdAt: 0, updatedAt: 0, partDetails:0 };
     const startIndex = (page - 1) * pageSize;
-    const totalCount = await FormModel.countDocuments(query);
-    const paginatedData = await FormModel.aggregate([
+    const totalCount = await TransactionModel.countDocuments(query);
+    const paginatedData = await TransactionModel.aggregate([
       {
         $sort: {
           _id: -1,
@@ -391,9 +391,9 @@ const redemptionRequest = async (page, pageSize, req) => {
       mobile: { $regex: `${req?.query?.mobileNo || ""}`, $options: "i" },
     };
     const startIndex = Math.abs((page - 1) * pageSize);
-    const totalCount = await TransactionModel.countDocuments(query);
+    const totalCount = await RedemptionModel.countDocuments(query);
     console.log(startIndex, totalCount, pageSize);
-    const paginatedData = await TransactionModel.aggregate([
+    const paginatedData = await RedemptionModel.aggregate([
       {
         $match: query,
       },

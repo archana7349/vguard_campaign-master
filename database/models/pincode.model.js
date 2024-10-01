@@ -27,6 +27,6 @@ const PincodeSchema = new Schema({
     }
 }, { timestamps: true });
 
-const PincodeModel = mongoose.model("pincode_master", PincodeSchema);
+const PincodeModel = mongoose.model("pincode_masters", PincodeSchema);
 
 module.exports = PincodeModel;

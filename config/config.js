@@ -2,7 +2,7 @@ module.exports = {
   port: process.env.PORT || 5000,
   ip: process.env.HOST || "0.0.0.0",
   mongo: {
-    uri: process.env.MONGO_URL || "mongodb://127.0.0.1:27017/vg_campaign_db_v2",
+    uri: process.env.MONGO_URL || "mongodb://127.0.0.1:27018/vg_dhanbarse_whc",
   },
   TOTAL_TRANSACTION_COUNT: 106,
   NORMAL_POINTS:100,

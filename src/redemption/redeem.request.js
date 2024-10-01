@@ -1,4 +1,4 @@
-const { UserModel, TransactionModel } = require("../../database/index.model");
+const { UserModel,RedemptionModel } = require("../../database/index.model");
 const { upiSMS } = require("../../helper/sms.service");
 
 const raiseRedeemRequest = async (req, res) => {
@@ -40,7 +40,7 @@ const raiseRedeemRequest = async (req, res) => {
       };
     }
 
-    const newTransaction = new TransactionModel({
+    const newTransaction = new RedemptionModel({
       amount: String(req.body?.amount),
       status: "Pending",
       mobile: req?.user?.mobile,

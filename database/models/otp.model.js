@@ -68,6 +68,6 @@ OtpSchema.methods.verifyOTP = async function () {
   }
 };
 
-const OtpModel = mongoose.model("OTP", OtpSchema);
+const OtpModel = mongoose.model("otps", OtpSchema);
 
 module.exports = OtpModel;

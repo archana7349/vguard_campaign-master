@@ -1,6 +1,6 @@
 const {
   CouponModel,
-  FormModel,
+  TransactionModel,
   VendorApiModel,
   UserModel,
   CustomerModel,
@@ -94,7 +94,7 @@ const productScan = async (req, res) => {
 
     if (getTransactionPoints.customFlag && getValidateCouponCode.customFlag) {
       console.log(req.user)
-      const claimForm = new FormModel({
+      const claimForm = new TransactionModel({
         name: req.body?.name,
         mobile: req.user?.mobile,
         email: req.body?.email,
@@ -182,7 +182,7 @@ const productScan = async (req, res) => {
 
 
 const transactionPoints = async (req) => {
-  const transactionCount = await FormModel.countDocuments({});
+  const transactionCount = await TransactionModel.countDocuments({});
   const specialPointsDetails =  SPECIAL_POINTS_DETAILS;
   const transactionInterval = TRANSACTION_INTERVAL;
   

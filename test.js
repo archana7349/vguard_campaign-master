@@ -1,7 +1,7 @@
 // const mongoose = require("mongoose");
 
 const { default: mongoose } = require("mongoose");
-const { UserModel, TransactionModel, PartMasterModel, FormModel } = require("./database/index.model");
+const { UserModel, RedemptionModel, PartMasterModel, TransactionModel} = require("./database/index.model");
 
 // const { CouponModel } = require("./database/index.model.js");
 const { connection } = require("./database/connection");
@@ -32,7 +32,7 @@ const config = require("./config/config.js");
 
 // const mongoose = require("mongoose");
 
-// const { FormModel } = require("./database/index.model.js");
+// const { TransactionModel} = require("./database/index.model.js");
 // const { connection } = require("./database/connection");
 // const config = require("./config/config.js");
 // connection(mongoose, config, {
@@ -41,7 +41,7 @@ const config = require("./config/config.js");
 // }).connectToMongo();
 // const couponadded = async (consad) => {
 //   try {
-//     consad = new FormModel({
+//     consad = new TransactionModel({
 //       name: "Tester",
 //       email: "test@gmail.com",
 //       mobile: "9606862430",

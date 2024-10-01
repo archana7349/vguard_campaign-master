@@ -46,6 +46,6 @@ UserSchema.virtual("points_balance").get(function () {
 
 UserSchema.set("toJSON", { virtuals: true });
 
-const UserModel = mongoose.model("Users", UserSchema);
+const UserModel = mongoose.model("users", UserSchema);
 
 module.exports = UserModel;

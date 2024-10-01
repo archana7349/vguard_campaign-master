@@ -1,4 +1,4 @@
-const { CouponModel, FormModel, UserModel } = require("../../database/index.model");
+const { CouponModel, TransactionModel, UserModel } = require("../../database/index.model");
 const { formSMS } = require("../../helper/sms.service");
 
 async function submitForm(req, res, next) {
@@ -43,16 +43,17 @@ async function submitForm(req, res, next) {
       errorcode.code = 404;
       throw errorcode;
     }
-    const saveForm = new FormModel({
+    const saveForm = new TransactionModel({
       name: name,
       email: email || "dummy@gmail.com",
       mobile: req.user?.mobile || mobile,
       dateOfpuchase: dateOfpuchase,
       model: model,
       purchasePrice: purchasePrice,
-      scratchCode: scratchCode,
+      // scratchCode: scratchCode,
       comment: comment,
       ip: triggeredIp,
+
     });
     await saveForm.save();
 

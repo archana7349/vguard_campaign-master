@@ -1,4 +1,4 @@
-const { UserModel, TransactionModel } = require("../../database/index.model");
+const { UserModel,RedemptionModel } = require("../../database/index.model");
 const config = require("../../config/config");
 const { createPayout } = require("../../helper/vouch.api");
 const { upiSMS } = require("../../helper/sms.service");
@@ -29,7 +29,7 @@ async function redeemUPI(req, res, next) {
       apikey: config.VOUCH_KEY,
     });
     if (payout.code == 1) {
-      const trans = new TransactionModel({
+      const trans = new RedemptionModel({
         mobile,
         status: "success",
         amount: amount,
@@ -40,7 +40,7 @@ async function redeemUPI(req, res, next) {
       return res.json({ code: 200, message: "Payout was successfull." });
     } else {
       if (payout.code == 2) {
-        const trans = new TransactionModel({
+        const trans = new RedemptionModel({
           mobile,
           status: "failed",
           amount: amount,
@@ -52,7 +52,7 @@ async function redeemUPI(req, res, next) {
         );
         await trans.save();
       } else {
-        const trans = new TransactionModel({
+        const trans = new RedemptionModel({
           mobile,
           status: "pending",
           amount: amount,

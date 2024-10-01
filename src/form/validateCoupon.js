@@ -1,6 +1,6 @@
 const { default: axios } = require("axios");
 const { validCouponCode } = require("../../utils/regex");
-const { PartMasterModel, FormModel } = require("../../database/index.model");
+const { PartMasterModel, TransactionModel } = require("../../database/index.model");
 
 const validateCoupon = async (req, res) => {
   try {
@@ -77,11 +77,11 @@ const validateCouponCode = async (req) => {
     };
   }
 
-  const checkList = await FormModel.find({
+  const checkList = await TransactionModel.find({
     mobile: req.user?.mobile
   });
 
-  const checklist2 = await FormModel.findOne({
+  const checklist2 = await TransactionModel.findOne({
     couponCode : req.body.couponCode 
   })
 

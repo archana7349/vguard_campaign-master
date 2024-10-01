@@ -5,38 +5,98 @@ const Schema = mongoose.Schema;
 
 const TransactionSchema = new Schema(
   {
-    amount: {
+    name: {
       type: String,
       required: true,
     },
-    upiId: {
-      type: String,
-      required: true,
-    },
-    status: {
+    email: {
       type: String,
     },
     mobile: {
       type: String,
+      required: true,
     },
-    comment:{
-      type:String,
-      default:''
-    },
-    transactedOn: {
+    dateOfpuchase: {
       type: Date,
-      default: Date.now,
+      required: true,
     },
-    updatedOn: {
-      type: Date,
+    model: {
+      type: String,
+      required: true,
     },
-    updatedBy: {
+    purchasePrice: {
+      type: String,
+      // required: true,
+    },
+    // warrantyDays: {
+    //   type: Date,
+    // },
+    points: {
+      type: String,
+      reuired: true,
+    },
+    couponCode: {
+      type: String,
+      required: true,
+      unique: true
+    },
+    partNumber: {
+      type: String,
+      required: true,
+    },
+    customerId: {
       type:String,
-    }
+      required: true,
+    },
+    billImage: {
+      type: String,
+    },
+    // WarrantyImage: {
+    //   type: String,
+    // },
+    latitude: {
+      type: String,
+      // required: true,
+    },
+    longitude: {
+      type: String,
+      // required: true,
+    },
+    comment: {
+      type: String,
+      // required: true,
+    },
+    ip: {
+      type: String,
+    },
+    invoiceURL: {
+      type: String,
+    },
+    district:{
+      type: String,
+      required: true,
+  },
+   city:{
+      type: String,
+      required: true,
+  },
+   state:{
+      type: String,
+      required: true,
+  },
+   pincode:{
+      type: String,
+      required: true,
+  },
+  address:{
+    type: String,
+    required: true,
+},
+
   },
   { timestamps: true }
 );
 
-const TransactionModel = mongoose.model("Transaction", TransactionSchema);
+const TransactionModel = mongoose.model("transactions", TransactionSchema);
 
 module.exports = TransactionModel;

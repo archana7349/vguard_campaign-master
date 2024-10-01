@@ -1,5 +1,5 @@
 const { default: mongoose } = require("mongoose");
-const { TransactionModel, UserModel } = require("../../database/index.model");
+const { RedemptionModel, UserModel } = require("../../database/index.model");
 
 const processRedeemRequest = async (req, res) => {
 
@@ -8,13 +8,13 @@ const processRedeemRequest = async (req, res) => {
     let responseList = [];
     if (!Array.isArray(requestList)) {
       throw {
-        customMessage: "Invalid transaction list",
+        customMessage: "Invalid redemption list",
         code: 400,
       };
     }
     if (requestList.length < 1) {
       throw {
-        customMessage: "Request list must contain at least one transaction with status Approved or Rejected",
+        customMessage: "Redemption list cannot be empty",
         code: 400,
       };
     }
@@ -25,12 +25,12 @@ const processRedeemRequest = async (req, res) => {
           amount:tran?.amount,
           upiId:tran?.upiId,
           name:tran?.name,
-          message: "Unprocessable transanction",
+          message: "Unprocessable Redemption",
         });
         continue;
       }
 
-      const transactionData = await TransactionModel.findOne({
+      const transactionData = await RedemptionModel.findOne({
         _id: tran?.transactionId,
       });
 
@@ -39,7 +39,7 @@ const processRedeemRequest = async (req, res) => {
           amount:tran?.amount,
           upiId:tran?.upiId,
           name:tran?.name,
-          message: "Transaction not found",
+          message: "Redemption not found",
         });
         continue;
       }
@@ -62,14 +62,14 @@ const processRedeemRequest = async (req, res) => {
           amount:tran?.amount,
           upiId:tran?.upiId,
           name:tran?.name,
-          message: `Transaction is already been ${
+          message: `Request is already been ${
             transactionData?.status || "processed"
           }`,
         });
       }
 
       if (tran?.status == "Approved") {
-        const updatedTransaction = await TransactionModel.updateOne(
+        const updatedTransaction = await RedemptionModel.updateOne(
           {
             _id: tran?.transactionId,
             status: "Pending",
@@ -99,7 +99,7 @@ const processRedeemRequest = async (req, res) => {
       }
 
       if (tran?.status == "Rejected") {
-        const updatedTransaction = await TransactionModel.updateOne(
+        const updatedTransaction = await RedemptionModel.updateOne(
           {
             _id: tran?.transactionId,
             status: "Pending",
@@ -142,7 +142,7 @@ const processRedeemRequest = async (req, res) => {
         code:200,
         responseList
     })
-  } catch (err) {
+  } catch (err) {Redemption
     console.log("error",err)
     return res.json({
       message: err?.customMessage || "Something went wrong, Please try again",
