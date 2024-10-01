@@ -1,7 +1,7 @@
 // const mongoose = require("mongoose");
 
 const { default: mongoose } = require("mongoose");
-const { UserModel, TransactionModel, PartMasterModel } = require("./database/index.model");
+const { UserModel, TransactionModel, PartMasterModel, FormModel } = require("./database/index.model");
 
 // const { CouponModel } = require("./database/index.model.js");
 const { connection } = require("./database/connection");
@@ -258,22 +258,47 @@ const config = require("./config/config.js");
 // };
 // test();
 
+// const test = async () => {
+//   try {
+//     connection(mongoose, config, {
+//       autoIndex: false,
+//       connectTimeoutMS: 1000,
+//     }).connectToMongo();
+//     let d = await PartMasterModel.find(
+//       {  },
+//       {
+//        partNumber:1
+//       }
+//     );
+//     console.log(d.map(ele=>ele?.partNumber))
+
+//   } catch (error) {
+//     console.log(error);
+//   }
+// };
+connection(mongoose, config, {
+  autoIndex: false,
+  connectTimeoutMS: 1000,
+}).connectToMongo();
 const test = async () => {
   try {
-    connection(mongoose, config, {
-      autoIndex: false,
-      connectTimeoutMS: 1000,
-    }).connectToMongo();
-    let d = await PartMasterModel.find(
-      {  },
-      {
-       partNumber:1
-      }
-    );
-    console.log(d.map(ele=>ele?.partNumber))
-   
+    console.log("sdsc")
+    const newForm = new PartMasterModel({
+      partNumber: '1106402',
+      partDescription: 'Water instant',
+      points: '0',
+      isActive: true,
+      categoryId:new mongoose.Types.ObjectId("66f13819fb585a595bb6d6e8"),
+      subCategoryId:new mongoose.Types.ObjectId("66f13889fb585a595bb6d6ec")
+    })
+    console.log("123cdsc")
+    await newForm.save();
+    console.log("sdcdscdsc")
   } catch (error) {
-    console.log(error);
+    console.log(error)
   }
-};
+
+
+}
+
 test();

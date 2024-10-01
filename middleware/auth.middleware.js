@@ -1,6 +1,10 @@
 const { authService } = require("../helper/auth.service");
 const { verify } = authService();
 
+const multer = require('multer');
+const upload = multer({ storage: multer.memoryStorage() });
+
+
 async function authMiddleware(req, res, next) {
   const token = req.header("Authorization");
   try {

@@ -12,6 +12,7 @@ const app = express();
 
 app.use(cors())
 
+
 expressConfig(app);
 
 connection(mongoose, config, {
@@ -20,6 +21,9 @@ connection(mongoose, config, {
 }).connectToMongo();
 
 app.get("/auth", (req, res) => res.send("ok"));
+
+app.use(express.json());
+
 
 app.use("/auth", authRouter);
 

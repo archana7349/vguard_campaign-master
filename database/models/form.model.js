@@ -28,14 +28,9 @@ const FormSchema = new Schema(
       type: String,
       // required: true,
     },
-    scratchCode: {
-      type: String,
-      required: true,
-      unique: true
-    },
-    warrantyDays: {
-      type: Date,
-    },
+    // warrantyDays: {
+    //   type: Date,
+    // },
     points: {
       type: String,
       reuired: true,
@@ -56,9 +51,9 @@ const FormSchema = new Schema(
     billImage: {
       type: String,
     },
-    WarrantyImage: {
-      type: String,
-    },
+    // WarrantyImage: {
+    //   type: String,
+    // },
     latitude: {
       type: String,
       // required: true,
@@ -74,6 +69,30 @@ const FormSchema = new Schema(
     ip: {
       type: String,
     },
+    invoiceURL: {
+      type: String,
+    },
+    district:{
+      type: String,
+      required: true,
+  },
+   city:{
+      type: String,
+      required: true,
+  },
+   state:{
+      type: String,
+      required: true,
+  },
+   pincode:{
+      type: String,
+      required: true,
+  },
+  address:{
+    type: String,
+    required: true,
+},
+
   },
   { timestamps: true }
 );

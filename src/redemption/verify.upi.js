@@ -12,7 +12,7 @@ async function verifyUpi(req, res, next) {
     }
 
     const responseData = await checkValidation(upi);
-
+    
     if (
       responseData &&
       responseData.success === true &&
@@ -32,10 +32,12 @@ async function verifyUpi(req, res, next) {
   }
 }
 
+
 async function checkValidation(upi) {
   let body = { upi_id: upi };
   let config = { headers: { Authorization: `Bearer ${UPI_TOKEN}` } };
   let data = new VendorApiModel({ request: body, vendor: UPI_VERIFY_URL })
+  
 
   return await axios
     .post(UPI_VERIFY_URL, body, config)
@@ -47,9 +49,12 @@ async function checkValidation(upi) {
     })
     .catch(async (error) => {
       if (error?.response) {
-        data.response = error.response
+        data.response = error?.response?.data
         await data.save();
-        throw error.response?.data || new Error("Axios error")
+        throw {
+          message:"Invalid UPI ID",
+          statusCode:400
+        }
       } else if (error?.request) {
         data.response = error.request
         await data.save();

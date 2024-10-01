@@ -30,7 +30,7 @@ const validateCouponCode = async (req) => {
   ) {
     throw { customMessage: "Service unavailable", customCode: 503 };
   }
-
+ 
   if (!req.body.couponCode) {
     throw { customMessage: "Please enter the coupon code", customCode: 400 };
   }
@@ -43,14 +43,13 @@ const validateCouponCode = async (req) => {
   }
 
   const payload = {
-    module_id: process.env.ESEAL_MODULE_ID,
+     module_id: process.env.ESEAL_MODULE_ID,
     access_token: process.env.ESEAL_ACCESS_TOKEN,
     iot: req.body.couponCode,
     vendor_token: process.env.ESEAL_VENDOR_TOKEN,
   };
 
   const esealPartDetails = await axios.post(process.env.ESEAL_URL, payload);
-
   if (esealPartDetails?.data?.Status != 1) {
     if (esealPartDetails?.data?.Data?.length === 0) {
       throw {
@@ -65,10 +64,11 @@ const validateCouponCode = async (req) => {
     };
   }
 
-  const partDetails = await PartMasterModel.findOne({
+  console.log(esealPartDetails?.data)
+  let partDetails = await PartMasterModel.findOne({
     partNumber: esealPartDetails?.data?.Data?.Material_Code,
     isActive:true
-  });
+  }).lean();
 
   if (!partDetails?.partNumber) {
     throw {
@@ -100,8 +100,10 @@ const validateCouponCode = async (req) => {
       customCode: 422,
     };
   }
-  partDetails.customFlag = true;
-  return partDetails;
+  return {
+    ...partDetails,
+    customFlag:true
+  }
 };
 
 module.exports = {

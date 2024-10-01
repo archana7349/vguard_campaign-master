@@ -31,20 +31,25 @@ async function generateReport(req, res, next) {
 
     switch (reportType) {
       case "otp-success":
+        console.log("OTP report")
         reportData = await otpSuccessReport(page, pageSize);
         break;
       case "otp-failure":
+        console.log("OTP Failed")
         reportData = await otpFailureReport(page, pageSize);
         break;
       case "otp-active":
+        console.log("Active")
         reportData = await otpActiveReport(page, pageSize);
         break;
       case "login-success":
+        console.log("Successfully logged in")
         reportData = await loginSuccessReport(page, pageSize);
         break;
       case "users":
         reportData = await usersReport(page, pageSize);
         break;
+        console.log("users report")
       case "payout":
         reportData = await payoutReport(page, pageSize,req);
         break;
@@ -58,6 +63,7 @@ async function generateReport(req, res, next) {
         reportData = await redemptionRequest(page, pageSize,req);
         break;
       default:
+        console.log("undefined")
         throw new Error("Invalid report requested.");
     }
     if (type == "xlsx") {

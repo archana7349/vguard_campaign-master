@@ -2,13 +2,19 @@ module.exports = {
   port: process.env.PORT || 5000,
   ip: process.env.HOST || "0.0.0.0",
   mongo: {
-    uri: process.env.MONGO_URL || "mongodb://127.0.0.1:27017/vg_campaign",
+    uri: process.env.MONGO_URL || "mongodb://127.0.0.1:27017/vg_campaign_db_v2",
   },
-  specialPoints:100,
-  normalPoints:10,
-  transactionInterval:50,
-  specialPointsIndex:7,
-  multiple:3,
+  TOTAL_TRANSACTION_COUNT: 106,
+  NORMAL_POINTS:100,
+  TRANSACTION_INTERVAL:50,
+ 
+ SPECIAL_POINTS_DETAILS:{
+    "7": '2000',
+    "14": '200',
+    "21": '200',
+    "35": '150',
+    "42": '150'
+  },
   jwtSecret: process.env.JWT_SECRET || "jkl!±@£!@ghj1237",
   MAX_VALUE: 3,
   VOUCH_WALLET: process.env.NODE_ENV === 'production' ? process.env.VOUCH_WALLET : "test-01",

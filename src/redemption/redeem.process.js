@@ -2,12 +2,19 @@ const { default: mongoose } = require("mongoose");
 const { TransactionModel, UserModel } = require("../../database/index.model");
 
 const processRedeemRequest = async (req, res) => {
+
   try {
     const requestList = req.body;
     let responseList = [];
     if (!Array.isArray(requestList)) {
       throw {
         customMessage: "Invalid transaction list",
+        code: 400,
+      };
+    }
+    if (requestList.length < 1) {
+      throw {
+        customMessage: "Request list must contain at least one transaction with status Approved or Rejected",
         code: 400,
       };
     }
@@ -34,11 +41,12 @@ const processRedeemRequest = async (req, res) => {
           name:tran?.name,
           message: "Transaction not found",
         });
+        continue;
       }
 
       const isBlock = await UserModel.findOne({mobile:transactionData?.mobile});
 
-      if(isBlock.block){
+      if(isBlock?.block){
         responseList.push({
           amount:tran?.amount,
           upiId:tran?.upiId,
@@ -135,9 +143,10 @@ const processRedeemRequest = async (req, res) => {
         responseList
     })
   } catch (err) {
+    console.log("error",err)
     return res.json({
-      message: res?.customMessage || "Something went wrong, Please try again",
-      code: res?.customCode || 500,
+      message: err?.customMessage || "Something went wrong, Please try again",
+      code: err?.customCode || 500,
       error: !err?.customMessage && err?.message,
     });
   }

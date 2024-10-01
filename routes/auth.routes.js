@@ -1,4 +1,5 @@
 const express = require("express");
+
 const { sendOTP } = require("../src/otp/send.otp");
 const { verifyOTP } = require("../src/otp/verify.otp");
 const { submitForm, } = require("../src/form/user.form");
@@ -15,6 +16,16 @@ const { productScan } = require("../src/form/product.scan.js");
 const { getCustomerDetails, getCitiesByPincode } = require("../src/data-utils/user.details.js");
 const { raiseRedeemRequest } = require("../src/redemption/redeem.request.js");
 const { processRedeemRequest } = require("../src/redemption/redeem.process.js");
+const { testingFn } = require("../src/testing/test.js")
+
+
+const multer = require('multer');
+const path = require('path');
+const fs = require('fs');
+const upload = multer();
+
+
+
 
 const authRouter = express.Router();
 
@@ -30,11 +41,17 @@ authRouter.get("/report/:type", adminMiddleware, generateReport)
 authRouter.get("/get-booklet",adminMiddleware,getBooklet);
 authRouter.patch("/update-form",adminMiddleware,updateForm);
 authRouter.post("/validate-coupon",authMiddleware,validateCoupon);
-authRouter.post("/claim-coupon",authMiddleware,productScan);
+authRouter.post("/claim-coupon",authMiddleware,upload.single('invoice'),productScan);
 authRouter.get("/get-customer-details",authMiddleware,getCustomerDetails);
 authRouter.get("/:pincode/get-cities",getCitiesByPincode);
 authRouter.post("/raise-redemption-request",authMiddleware,raiseRedeemRequest);
 authRouter.post("/process-redemption-request",authMiddleware,processRedeemRequest);
+authRouter.post("/upload-invoice", upload.single('invoice'), testingFn);
+authRouter.post('/product-scan', upload.single('file'), productScan);
+
+
+
+
 
 authRouter.get('*', (req, res) => {
     throw new Error("Unknown method or path")

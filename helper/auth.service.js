@@ -8,7 +8,7 @@ function authService() {
   const generateToken = (data) => {
     return new jose.SignJWT(data)
       .setProtectedHeader({ alg: "HS256" })
-      .setExpirationTime("2h")
+      .setExpirationTime("10h")
       .sign(secret);
   };
 

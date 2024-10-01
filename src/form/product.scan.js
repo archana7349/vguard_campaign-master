@@ -11,18 +11,31 @@ const { validateCouponCode } = require("./validateCoupon");
 const sax = require("sax");
 const moment = require("moment");
 const { formSMS } = require("../../helper/sms.service");
+const { SPECIAL_POINTS_INDEX, MULTIPLE, TRANSACTION_INTERVAL, SPECIAL_POINTS_DETAILS, NORMAL_POINTS } = require("../../config/config");
+const AWS = require('aws-sdk');
+AWS.config.update({
+  accessKeyId: process.env.ACCESS_KEY_ID,
+  secretAccessKey: process.env.SECRET_ACCESS_KEY,
+  region: process.env.S3_REGION
+});
+const s3 = new AWS.S3();
+// const { TRANSACTION_LIMIT, SPECIAL_POINTS } = require("../../config");
 
 const productScan = async (req, res) => {
   try {
+    console.log(req.body)
+    console.log(req.file)
     const triggeredIp = req.headers["x-forwarded-for"] || "0.0.0.0";
+    
+    
     if (
       !req.body?.couponCode ||
       !req.body?.name ||
       !req.body?.email ||
       !req.body?.pincode ||
       !req.body?.city ||
-      !req.body?.scratchCode ||
-      isNaN(req.body?.pincode)
+      isNaN(req.body?.pincode) ||
+      !req.file
     ) {
       throw {
         customMessage: "Please fill all mandatory fields",
@@ -30,10 +43,29 @@ const productScan = async (req, res) => {
       };
     }
 
+
+    let fileUrl = '';
+    if (req.file) {
+      const file = req.file;
+      const params = {
+        Bucket: process.env.S3_BUCKET,
+        Key: `${Date.now()}_${file.originalname}`,
+        Body: file.buffer,
+        ContentType: file.mimetype,
+      };
+
+      const uploadResult = await s3.upload(params).promise();
+      fileUrl = uploadResult.Location;
+      // return res.json({message:"Ok",fileUrl})
+    }
+
     const address = await PincodeModel.findOne({
       pincode: Number(req.body?.pincode),
       cityName: req.body?.city,
     });
+    console.log(address, "dfhsafgah");
+
+
 
     await CustomerModel.findOneAndUpdate(
       {
@@ -44,7 +76,6 @@ const productScan = async (req, res) => {
         email: req.body?.email,
         pincode: address?.pincode || "",
         city: address?.city || "",
-        scratchCode: req.body?.scratchCode,
         state: address?.state || "",
         district: address?.district || "",
         address: address?.city || "",
@@ -55,56 +86,60 @@ const productScan = async (req, res) => {
     );
 
     let getValidateCouponCode = await validateCouponCode(req);
-    let getValidateScratchCode = await validateScratchCode(req);
+    // let getValidateScannerCode = await validateScannerCode(req);
+    console.log( getValidateCouponCode.customFlag,"checking getValidateCouponcode fn")
 
-    // return res.json({getValidateCouponCode,d:moment().add(getValidateCouponCode?.warrantyDays,'days').toDate()})
-    if (
-      getValidateCouponCode?.customFlag &&
-      getValidateScratchCode?.customFlag
-    ) {
+    const getTransactionPoints = await transactionPoints(req);
+    console.log(getTransactionPoints, "checking validScannerCode fn")
+
+    if (getTransactionPoints.customFlag && getValidateCouponCode.customFlag) {
+      console.log(req.user)
       const claimForm = new FormModel({
         name: req.body?.name,
         mobile: req.user?.mobile,
         email: req.body?.email,
         pincode: address?.pincode || "",
         city: address?.city || "",
-        scratchCode: req.body?.scratchCode,
+        points:getTransactionPoints?.awardedPoints,
         couponCode: req.body?.couponCode,
         state: address?.state || "",
         district: address?.district || "",
         address: address?.city || "",
         customerId: req.user?.mobile,
         partNumber: getValidateCouponCode?.partNumber,
-        warrantyDays: moment()
-          .add(getValidateCouponCode?.warrantyDays, "days")
-          .toDate(),
-        ip:triggeredIp
+        // warrantyDays: moment().add(validScannerCode?.warrantyDays, "days").toDate(),
+        ip: triggeredIp,
+        invoiceURL: fileUrl,
       });
+      console.log(claimForm)
 
-      let claimedFlag = await CouponModel.updateOne(
-        { coupon: req.body?.scratchCode, claimed: false },
-        {
-          $set: {
-            claimed: true,
-            claimedOn: Date.now(),
-            claimedBy: req.user?.mobile,
-          },
-        }
+
+
+      // let claimedFlag = await CouponModel.updateOne(
+      //   { coupon: req.body?.scannerCode, claimed: false },
+      //   {
+      //     $set: {
+      //       claimed: true,
+      //       claimedOn: Date.now(),
+      //       claimedBy: req.user?.mobile,
+      //     },
+      //   }
+      // );
+
+
+      // if (claimedFlag.matchedCount && claimedFlag.modifiedCount) {
+      await claimForm.save();
+      await UserModel.findOneAndUpdate(
+        { mobile: req.user?.mobile },
+        { $inc: { points_earned: Number(getTransactionPoints?.awardedPoints) || 0 } }
       );
-
-      if (claimedFlag.matchedCount && claimedFlag.modifiedCount) {
-        await claimForm.save();
-        await UserModel.findOneAndUpdate(
-          { mobile: req.user?.mobile },
-          { $inc: { points_earned: Number(getValidateScratchCode?.value) || 0 } }
-        );
-        formSMS(req.user?.mobile, getValidateScratchCode?.value)
-      } else {
-        throw {
-          customMessage: "Scratch code has already been used",
-          customCode: 422,
-        };
-      }
+      formSMS(req.user?.mobile, parseInt?.awardedPoints)
+      // } else {
+      //   throw {
+      //     customMessage: "Scratch code has already been used",
+      //     customCode: 422,
+      //   };
+      // // }
 
       let crmData = {
         pinCode: address?.pincode,
@@ -114,17 +149,17 @@ const productScan = async (req, res) => {
         email: req.body?.name,
         alternateNo: req.user?.mobile,
         contactNo: req.user?.mobile,
-        copuonCode: req.body?.couponCode,
+        // copuonCode: req.body?.couponCode,
         name: req.body?.name,
-        skuDetail: getValidateCouponCode?.partNumber,
+        skuDetail:getTransactionPoints?.partNumber,
       };
 
       siebelCrmSync(crmData);
 
       return res.json({
-        message: "Points claimed sucessfully",
+        message: getTransactionPoints.isSpecial ? "Congratulations! Special points earned!" : "Points Earned sucessfully",
         code: 200,
-        redeemed_points: Number(getValidateScratchCode?.value) || 0,
+        redeemed_points: Number(getTransactionPoints?.awardedPoints) || 0
       });
     } else {
       return res.json({
@@ -132,7 +167,10 @@ const productScan = async (req, res) => {
         code: 500,
       });
     }
-  } catch (err) {
+  }
+
+  catch (err) {
+    console.log(err)
     return res.json({
       message: err?.customMessage || "Something went wrong, Please try again",
       code: err?.customCode || 500,
@@ -141,25 +179,34 @@ const productScan = async (req, res) => {
   }
 };
 
-const validateScratchCode = async (req) => {
-  const checkCoupon = await CouponModel.findOne({
-    coupon: req.body?.scratchCode,
-  });
 
-  if (!checkCoupon) {
-    throw {
-      customMessage: "Invalid scratch code, please provide valid scratch code",
-      customCode: 400,
-    };
+
+const transactionPoints = async (req) => {
+  const transactionCount = await FormModel.countDocuments({});
+  const specialPointsDetails =  SPECIAL_POINTS_DETAILS;
+  const transactionInterval = TRANSACTION_INTERVAL;
+  
+  let currRequest = transactionCount + 1
+  let points = NORMAL_POINTS;
+  let quotient = Math.floor(currRequest / transactionInterval);
+  let deductingValue = quotient * transactionInterval;
+  let currentTransactionRequest = currRequest - deductingValue;
+  let isSpecial = false;
+   
+  for (let i in specialPointsDetails) {
+    console.log(currentTransactionRequest, i, "Special Check");
+    if (currentTransactionRequest == i) {
+      points = specialPointsDetails[i];
+      isSpecial = true;
+      break;
+    }
   }
-  if (checkCoupon.claimed) {
-    throw {
-      customMessage: "Scratch code has already been used",
-      customCode: 400,
-    };
+
+  return {
+    isSpecial,
+    awardedPoints:points,  
+    customFlag: true
   }
-  checkCoupon.customFlag = true;
-  return checkCoupon;
 };
 
 const siebelCrmSync = async (crmData) => {
