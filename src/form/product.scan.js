@@ -53,9 +53,10 @@ const productScan = async (req, res) => {
         Body: file.buffer,
         ContentType: file.mimetype,
       };
-
+      console.log(params,"sdvsdcw")
       const uploadResult = await s3.upload(params).promise();
       fileUrl = uploadResult.Location;
+      console.log(fileUrl)
       // return res.json({message:"Ok",fileUrl})
     }
 

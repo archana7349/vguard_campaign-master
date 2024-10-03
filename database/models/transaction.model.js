@@ -11,6 +11,7 @@ const TransactionSchema = new Schema(
     },
     email: {
       type: String,
+      required: true,
     },
     mobile: {
       type: String,
@@ -18,7 +19,6 @@ const TransactionSchema = new Schema(
     },
     dateOfpuchase: {
       type: Date,
-      required: true,
     },
     model: {
       type: String,
@@ -33,7 +33,7 @@ const TransactionSchema = new Schema(
     // },
     points: {
       type: String,
-      reuired: true,
+      required: true,
     },
     couponCode: {
       type: String,
