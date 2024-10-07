@@ -49,7 +49,6 @@ async function generateReport(req, res, next) {
       case "users":
         reportData = await usersReport(page, pageSize);
         break;
-        console.log("users report")
       case "payout":
         reportData = await payoutReport(page, pageSize,req);
         break;
@@ -314,20 +313,7 @@ const sloganReport = async (page, pageSize) => {
       },
       {
         $lookup: {
-          from: "coupons",
-          localField: "scratchCode",
-          foreignField: "coupon",
-          as: "valueOfCoupon",
-        },
-      },
-      {
-        $unwind: {
-          path: "$valueOfCoupon",
-        },
-      },
-      {
-        $lookup: {
-          from: "partmasters",
+          from: "part_masters",
           let: {
             partNumberLocal: {
               $toInt: "$partNumber",
@@ -359,12 +345,12 @@ const sloganReport = async (page, pageSize) => {
       },
       {
         $addFields: {
-          valueOfCoupon: { $ifNull: ["$valueOfCoupon.value", ""] },
-          seriesOfCoupon: { $ifNull: ["$valueOfCoupon.bookletNo", ""] },
-          branchOfCoupon: { $ifNull: ["$valueOfCoupon.branch", ""] },
-          outletOfCoupon: { $ifNull: ["$valueOfCoupon.outlet", ""] },
-          dateOfpuchase: { $ifNull: ["$valueOfCoupon.claimedOn", ""] },
-          model: { $ifNull: ["$partDetails.partDescription", ""] },
+          valueOfCoupon: { $ifNull: ["$points", ""] },
+          seriesOfCoupon: { $ifNull: ["$bookletNo", ""] },
+          branchOfCoupon: { $ifNull: ["$branch", ""] },
+          outletOfCoupon: { $ifNull: ["$outlet", ""] },
+          dateOfpuchase: { $ifNull: ["$dateOfpuchase", ""] },
+          model: { $ifNull: ["$model", ""] },
           partNumber: { $ifNull: ["$partDetails.partNumber", ""] },
         },
       },

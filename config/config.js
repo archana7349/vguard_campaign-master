@@ -31,5 +31,6 @@ module.exports = {
     process.env.SMS_API_KEY || "bMesPZDmVSM-YBk7AJ9Y2DTvxhTRSyr6VHolj1DTkD",
   SMS_API_KEY2:
     process.env.SMS_API_KEY2 || "bMesPZDmVSM-YBk7AJ9Y2DTvxhTRSyr6VHolj1DTkD",
-  VOUCH_URI: process.env.NODE_ENV === 'production' ? process.env.VOUCH_URI : 'https://sim.iamvouched.com'
+  VOUCH_URI: process.env.NODE_ENV === 'production' ? process.env.VOUCH_URI : 'https://sim.iamvouched.com',
+  MAX_FILE_SIZE : 5 * 1024 * 1024
 };

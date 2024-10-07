@@ -11,7 +11,7 @@ const { validateCouponCode } = require("./validateCoupon");
 const sax = require("sax");
 const moment = require("moment");
 const { formSMS } = require("../../helper/sms.service");
-const { SPECIAL_POINTS_INDEX, MULTIPLE, TRANSACTION_INTERVAL, SPECIAL_POINTS_DETAILS, NORMAL_POINTS } = require("../../config/config");
+const { SPECIAL_POINTS_INDEX, MULTIPLE, TRANSACTION_INTERVAL, SPECIAL_POINTS_DETAILS, NORMAL_POINTS, MAX_FILE_SIZE } = require("../../config/config");
 const AWS = require('aws-sdk');
 AWS.config.update({
   accessKeyId: process.env.ACCESS_KEY_ID,
@@ -23,10 +23,9 @@ const s3 = new AWS.S3();
 
 const productScan = async (req, res) => {
   try {
-    console.log(req.body)
-    console.log(req.file)
     const triggeredIp = req.headers["x-forwarded-for"] || "0.0.0.0";
     
+
     
     if (
       !req.body?.couponCode ||
@@ -34,11 +33,19 @@ const productScan = async (req, res) => {
       !req.body?.email ||
       !req.body?.pincode ||
       !req.body?.city ||
+      !req.body?.selection_type ||
       isNaN(req.body?.pincode) ||
       !req.file
     ) {
       throw {
         customMessage: "Please fill all mandatory fields",
+        customCode: 400,
+      };
+    }
+
+    if(req.file.size > MAX_FILE_SIZE){
+      throw {
+        customMessage: "File size should be less than 5 MB",
         customCode: 400,
       };
     }
@@ -94,27 +101,52 @@ const productScan = async (req, res) => {
     console.log(getTransactionPoints, "checking validScannerCode fn")
 
     if (getTransactionPoints.customFlag && getValidateCouponCode.customFlag) {
-      console.log(req.user)
-      const claimForm = new TransactionModel({
-        name: req.body?.name,
-        mobile: req.user?.mobile,
-        email: req.body?.email,
-        pincode: address?.pincode || "",
-        city: address?.city || "",
-        points:getTransactionPoints?.awardedPoints,
-        couponCode: req.body?.couponCode,
-        state: address?.state || "",
-        district: address?.district || "",
-        address: address?.city || "",
-        customerId: req.user?.mobile,
-        partNumber: getValidateCouponCode?.partNumber,
-        // warrantyDays: moment().add(validScannerCode?.warrantyDays, "days").toDate(),
-        ip: triggeredIp,
-        invoiceURL: fileUrl,
-      });
-      console.log(claimForm)
 
+      let newTransaction = await TransactionModel.updateOne(
+        { couponCode: req.body?.couponCode },
+        {
+          $set: {
+            name: req.body?.name,
+            mobile: req.user?.mobile,
+            email: req.body?.email,
+            pincode: address?.pincode || "",
+            city: address?.city || "",
+            points: getTransactionPoints?.awardedPoints,
+            couponCode: req.body?.couponCode,
+            state: address?.state || "",
+            district: address?.district || "",
+            address: address?.city || "",
+            customerId: req.user?.mobile,
+            partNumber: getValidateCouponCode?.partNumber,
+            // warrantyDays: moment().add(validScannerCode?.warrantyDays, "days").toDate(),
+            ip: triggeredIp,
+            invoiceURL: fileUrl,
+            model: req.body?.selection_type,
+            dateOfpuchase: Date.now(),
+          },
+        },
+        {
+          new:true,
+          upsert:true
+        }
+      );
 
+      if (newTransaction.upsertedCount) {
+        await UserModel.findOneAndUpdate(
+          { mobile: req.user?.mobile },
+          {
+            $inc: {
+              points_earned: Number(getTransactionPoints?.awardedPoints) || 0,
+            },
+          }
+        );
+        formSMS(req.user?.mobile, parseInt?.awardedPoints);
+      }else{
+        throw {
+          customMessage: "Coupon has already been scanned",
+          customCode: 422,
+        };
+      }
 
       // let claimedFlag = await CouponModel.updateOne(
       //   { coupon: req.body?.scannerCode, claimed: false },
@@ -129,12 +161,6 @@ const productScan = async (req, res) => {
 
 
       // if (claimedFlag.matchedCount && claimedFlag.modifiedCount) {
-      await claimForm.save();
-      await UserModel.findOneAndUpdate(
-        { mobile: req.user?.mobile },
-        { $inc: { points_earned: Number(getTransactionPoints?.awardedPoints) || 0 } }
-      );
-      formSMS(req.user?.mobile, parseInt?.awardedPoints)
       // } else {
       //   throw {
       //     customMessage: "Scratch code has already been used",

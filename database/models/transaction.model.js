@@ -28,9 +28,10 @@ const TransactionSchema = new Schema(
       type: String,
       // required: true,
     },
-    // warrantyDays: {
-    //   type: Date,
-    // },
+    warrantyDays: {
+      type: Date,
+      default:Date.now()
+    },
     points: {
       type: String,
       required: true,

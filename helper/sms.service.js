@@ -2,7 +2,7 @@ const axios = require("axios")
 const { VendorApiModel } = require('../database/index.model')
 const sendSMS = async (mobile, otp) => {
   let uri = 'https://api.textlocal.in/'
-  let message = `Please use this OTP: ${otp} to login into Onam2024 Scratchnwin by V-Guard. Team V-Guard!`
+  let message = `Please use this OTP: ${otp} to login into Dhan Barse 2024 by V-Guard. Team V-Guard!`
   var URL = `${uri}/send/?apiKey=${process.env.SMS_API_KEY}&sender=VGUARD&numbers=${mobile}&message=${message}`
 
   let data = new VendorApiModel({ request: URL, vendor: uri })
