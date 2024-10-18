@@ -4,14 +4,7 @@ const { upiSMS } = require("../../helper/sms.service");
 const raiseRedeemRequest = async (req, res) => {
   try {
 
-    const isBlock = await UserModel.findOne({mobile:req.user?.mobile});
 
-    if(isBlock?.block){
-      throw {
-        customMessage: "Cannot redeem at this moment. Please try again later.",
-        customCode: 400,
-      };
-    }
 
     if (isNaN(req.body?.amount)) {
       throw {
@@ -26,6 +19,14 @@ const raiseRedeemRequest = async (req, res) => {
       throw {
         customMessage: "Mobile number not found",
         customCode: 422,
+      };
+    }
+
+    
+    if(userData?.block){
+      throw {
+        customMessage: "Cannot redeem at this moment. Please try again later.",
+        customCode: 400,
       };
     }
 

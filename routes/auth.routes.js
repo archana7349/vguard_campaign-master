@@ -16,8 +16,8 @@ const { productScan } = require("../src/form/product.scan.js");
 const { getCustomerDetails, getCitiesByPincode } = require("../src/data-utils/user.details.js");
 const { raiseRedeemRequest } = require("../src/redemption/redeem.request.js");
 const { processRedeemRequest } = require("../src/redemption/redeem.process.js");
-const { testingFn } = require("../src/testing/test.js")
-
+const { testingFn } = require("../src/testing/test.js");
+const { userBlockMiddleware } =  require("../middleware/user.block.js");
 
 const multer = require('multer');
 const path = require('path');
@@ -32,7 +32,7 @@ const authRouter = express.Router();
 authRouter.post("/send-otp", sendOTP);
 authRouter.post("/verify-otp", verifyOTP);
 authRouter.get("/check", authMiddleware, (req, res) => res.send("ok"));
-authRouter.get("/user", authMiddleware, userDetail);
+authRouter.get("/user", authMiddleware, userBlockMiddleware,userDetail);
 authRouter.post("/submit-form", authMiddleware, submitForm);
 authRouter.post("/verify-upi", authMiddleware, verifyUpi);
 authRouter.post("/redeem", authMiddleware, redeemUPI);

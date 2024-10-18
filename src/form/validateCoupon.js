@@ -26,7 +26,8 @@ const validateCouponCode = async (req) => {
   if (
     !process.env.ESEAL_MODULE_ID ||
     !process.env.ESEAL_ACCESS_TOKEN ||
-    !process.env.ESEAL_VENDOR_TOKEN
+    !process.env.ESEAL_VENDOR_TOKEN || 
+    !process.env.ESEAL_URL
   ) {
     throw { customMessage: "Service unavailable", customCode: 503 };
   }

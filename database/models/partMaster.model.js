@@ -35,7 +35,41 @@ const PartMasterSchema = new Schema({
         type: String,
         required: true,
         default:'91'
+    },
+    sizeDescription:{
+        type: String,
+        required: true,  
+    },
+    seriesDescription  :{
+        type: String,
+        required: true,  
+    },
+    subSeriesDescription:{
+        type: String,
+        required: true, 
+    },
+    subDivision:{
+        type: String,
+        required: true, 
+    },
+    positionDescription:{
+        type: String,
+        required: true,  
+    },
+    unit:{
+        type: String,
+        required: true, 
+    },
+    price:{
+        type: String,
+        required: true, 
+    },
+    subSegmentDescription:{
+        type: String,
+        required: true, 
     }
+
+    
 }, { timestamps: true });
 
 const PartMasterModel = mongoose.model("part_masters", PartMasterSchema);
