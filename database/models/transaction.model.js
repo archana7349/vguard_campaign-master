@@ -98,6 +98,6 @@ const TransactionSchema = new Schema(
   { timestamps: true }
 );
 
-const TransactionModel = mongoose.model("transactions", TransactionSchema);
+const TransactionModel = mongoose.model("warr_utsav_transactions", TransactionSchema);
 
 module.exports = TransactionModel;

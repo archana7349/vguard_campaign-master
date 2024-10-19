@@ -21,6 +21,6 @@ const CategorySchema = new Schema({
 
 }, { timestamps: true });
 
-const CategoryModel = mongoose.model("categories", CategorySchema);
+const CategoryModel = mongoose.model("warr_utsav_categories", CategorySchema);
 
 module.exports = CategoryModel;

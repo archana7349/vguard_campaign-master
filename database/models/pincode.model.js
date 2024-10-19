@@ -27,6 +27,6 @@ const PincodeSchema = new Schema({
     }
 }, { timestamps: true });
 
-const PincodeModel = mongoose.model("pincode_masters", PincodeSchema);
+const PincodeModel = mongoose.model("warr_utsav_pincode_masters", PincodeSchema);
 
 module.exports = PincodeModel;

@@ -50,6 +50,6 @@ const CustomerSchema = new Schema({
 
 }, { timestamps: true });
 
-const CustomerModel = mongoose.model("customers", CustomerSchema);
+const CustomerModel = mongoose.model("warr_utsav_customers", CustomerSchema);
 
 module.exports = CustomerModel;

@@ -45,6 +45,6 @@ const CouponSchema = new Schema({
   }
 }, { timestamps: true });
 
-const CouponModel = mongoose.model("coupons", CouponSchema);
+const CouponModel = mongoose.model("warr_utsav_coupons", CouponSchema);
 
 module.exports = CouponModel;

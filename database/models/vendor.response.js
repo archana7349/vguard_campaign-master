@@ -21,6 +21,6 @@ const VendorApiSchema = new Schema({
   }
 }, { timestamps: true });
 
-const VendorApiModel = mongoose.model("vendor_requests", VendorApiSchema);
+const VendorApiModel = mongoose.model("warr_utsav_vendor_requests", VendorApiSchema);
 
 module.exports = VendorApiModel;

@@ -37,6 +37,6 @@ const RedemptionSchema = new Schema(
   { timestamps: true }
 );
 
-const RedemptionModel  = mongoose.model("redemptions", RedemptionSchema);
+const RedemptionModel  = mongoose.model("warr_utsav_redemptions", RedemptionSchema);
 
 module.exports =  RedemptionModel;

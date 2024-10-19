@@ -72,6 +72,6 @@ const PartMasterSchema = new Schema({
     
 }, { timestamps: true });
 
-const PartMasterModel = mongoose.model("part_masters", PartMasterSchema);
+const PartMasterModel = mongoose.model("warr_utsav_part_masters", PartMasterSchema);
 
 module.exports = PartMasterModel;

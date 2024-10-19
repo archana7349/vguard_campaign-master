@@ -11,6 +11,6 @@ const CallbackSchema = new Schema({
     }
 }, { timestamps: true });
 
-const CallbackModel = mongoose.model("call_backs", CallbackSchema);
+const CallbackModel = mongoose.model("warr_utsav_call_backs", CallbackSchema);
 
 module.exports = CallbackModel;
