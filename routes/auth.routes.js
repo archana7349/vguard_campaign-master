@@ -22,6 +22,7 @@ const { userBlockMiddleware } =  require("../middleware/user.block.js");
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
+const { blockFeatureMiddleware } = require("../middleware/block.feature.js");
 const upload = multer();
 
 
@@ -35,7 +36,7 @@ authRouter.get("/check", authMiddleware, (req, res) => res.send("ok"));
 authRouter.get("/user", authMiddleware, userBlockMiddleware,userDetail);
 authRouter.post("/submit-form", authMiddleware, submitForm);
 authRouter.post("/verify-upi", authMiddleware, verifyUpi);
-authRouter.post("/redeem", authMiddleware, redeemUPI);
+authRouter.post("/redeem", blockFeatureMiddleware,authMiddleware, redeemUPI);
 authRouter.post("/callback", callback)
 authRouter.get("/report/:type", adminMiddleware, generateReport)
 authRouter.get("/get-booklet",adminMiddleware,getBooklet);
