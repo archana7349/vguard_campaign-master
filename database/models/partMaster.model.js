@@ -15,6 +15,7 @@ const PartMasterSchema = new Schema({
     points: {
         type: String,
         required: true,
+        default:'0'
     },
     categoryId: {
         type:Schema.Types.ObjectId,
@@ -34,42 +35,8 @@ const PartMasterSchema = new Schema({
     warrantyDays: {
         type: String,
         required: true,
-        default:'91'
+        default:'0'
     },
-    sizeDescription:{
-        type: String,
-        required: true,  
-    },
-    seriesDescription  :{
-        type: String,
-        required: true,  
-    },
-    subSeriesDescription:{
-        type: String,
-        required: true, 
-    },
-    subDivision:{
-        type: String,
-        required: true, 
-    },
-    positionDescription:{
-        type: String,
-        required: true,  
-    },
-    unit:{
-        type: String,
-        required: true, 
-    },
-    price:{
-        type: String,
-        required: true, 
-    },
-    subSegmentDescription:{
-        type: String,
-        required: true, 
-    }
-
-    
 }, { timestamps: true });
 
 const PartMasterModel = mongoose.model("warr_utsav_part_masters", PartMasterSchema);

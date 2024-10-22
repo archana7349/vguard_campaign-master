@@ -42,7 +42,7 @@ authRouter.get("/report/:type", adminMiddleware, generateReport)
 authRouter.get("/get-booklet",adminMiddleware,getBooklet);
 authRouter.patch("/update-form",adminMiddleware,updateForm);
 authRouter.post("/validate-coupon",authMiddleware,validateCoupon);
-authRouter.post("/claim-coupon",authMiddleware,upload.single('invoice'),productScan);
+authRouter.post("/claim-coupon",authMiddleware,upload.none(),productScan);
 authRouter.get("/get-customer-details",authMiddleware,getCustomerDetails);
 authRouter.get("/:pincode/get-cities",getCitiesByPincode);
 authRouter.post("/raise-redemption-request",authMiddleware,raiseRedeemRequest);

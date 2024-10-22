@@ -12,7 +12,7 @@ const SubCategorySchema = new Schema({
         required:true
     },
     isActive: {
-        type: String,
+        type: Boolean,
         required: true,
     },
     fileUrl:{

@@ -65,7 +65,6 @@ const validateCouponCode = async (req) => {
     };
   }
 
-  console.log(esealPartDetails?.data)
   let partDetails = await PartMasterModel.findOne({
     partNumber: esealPartDetails?.data?.Data?.Material_Code,
     isActive:true

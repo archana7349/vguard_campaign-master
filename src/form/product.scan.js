@@ -34,8 +34,7 @@ const productScan = async (req, res) => {
       !req.body?.pincode ||
       !req.body?.city ||
       !req.body?.selection_type ||
-      isNaN(req.body?.pincode) ||
-      !req.file
+      isNaN(req.body?.pincode)
     ) {
       throw {
         customMessage: "Please fill all mandatory fields",
@@ -43,35 +42,29 @@ const productScan = async (req, res) => {
       };
     }
 
-    if(req.file.size > MAX_FILE_SIZE){
-      throw {
-        customMessage: "File size should be less than 5 MB",
-        customCode: 400,
-      };
-    }
 
 
-    let fileUrl = '';
-    if (req.file) {
-      const file = req.file;
-      const params = {
-        Bucket: process.env.S3_BUCKET,
-        Key: `${Date.now()}_${file.originalname}`,
-        Body: file.buffer,
-        ContentType: file.mimetype,
-      };
-      console.log(params,"sdvsdcw")
-      const uploadResult = await s3.upload(params).promise();
-      fileUrl = uploadResult.Location;
-      console.log(fileUrl)
-      // return res.json({message:"Ok",fileUrl})
-    }
+
+    // let fileUrl = '';
+    // if (req.file) {
+    //   const file = req.file;
+    //   const params = {
+    //     Bucket: process.env.S3_BUCKET,
+    //     Key: `${Date.now()}_${file.originalname}`,
+    //     Body: file.buffer,
+    //     ContentType: file.mimetype,
+    //   };
+    //   console.log(params,"sdvsdcw")
+    //   const uploadResult = await s3.upload(params).promise();
+    //   fileUrl = uploadResult.Location;
+    //   console.log(fileUrl)
+    //   // return res.json({message:"Ok",fileUrl})
+    // }
 
     const address = await PincodeModel.findOne({
       pincode: Number(req.body?.pincode),
       cityName: req.body?.city,
     });
-    console.log(address, "dfhsafgah");
 
 
 
@@ -94,13 +87,8 @@ const productScan = async (req, res) => {
     );
 
     let getValidateCouponCode = await validateCouponCode(req);
-    // let getValidateScannerCode = await validateScannerCode(req);
-    console.log( getValidateCouponCode.customFlag,"checking getValidateCouponcode fn")
 
-    const getTransactionPoints = await transactionPoints(req);
-    console.log(getTransactionPoints, "checking validScannerCode fn")
-
-    if (getTransactionPoints.customFlag && getValidateCouponCode.customFlag) {
+    if (getValidateCouponCode.customFlag) {
 
       let newTransaction = await TransactionModel.updateOne(
         { couponCode: req.body?.couponCode },
@@ -111,16 +99,15 @@ const productScan = async (req, res) => {
             email: req.body?.email,
             pincode: address?.pincode || "",
             city: address?.city || "",
-            points: getTransactionPoints?.awardedPoints,
+            points: "0",
             couponCode: req.body?.couponCode,
             state: address?.state || "",
             district: address?.district || "",
             address: address?.city || "",
             customerId: req.user?.mobile,
             partNumber: getValidateCouponCode?.partNumber,
-            // warrantyDays: moment().add(validScannerCode?.warrantyDays, "days").toDate(),
+            warrantyDays: moment().add(getValidateCouponCode?.warrantyDays || 0, "days").toDate(),
             ip: triggeredIp,
-            invoiceURL: fileUrl,
             model: req.body?.selection_type,
             dateOfpuchase: Date.now(),
           },
@@ -132,15 +119,15 @@ const productScan = async (req, res) => {
       );
 
       if (newTransaction.upsertedCount) {
-        await UserModel.findOneAndUpdate(
-          { mobile: req.user?.mobile },
-          {
-            $inc: {
-              points_earned: Number(getTransactionPoints?.awardedPoints) || 0,
-            },
-          }
-        );
-        formSMS(req.user?.mobile, parseInt?.awardedPoints);
+        // await UserModel.findOneAndUpdate(
+        //   { mobile: req.user?.mobile },
+        //   {
+        //     $inc: {
+        //       points_earned: Number(getTransactionPoints?.awardedPoints) || 0,
+        //     },
+        //   }
+        // );
+        formSMS(req.user?.mobile, 0);
       }else{
         throw {
           customMessage: "Coupon has already been scanned",
@@ -176,17 +163,17 @@ const productScan = async (req, res) => {
         email: req.body?.name,
         alternateNo: req.user?.mobile,
         contactNo: req.user?.mobile,
-        // copuonCode: req.body?.couponCode,
+        copuonCode: req.body?.couponCode,
         name: req.body?.name,
-        skuDetail:getTransactionPoints?.partNumber,
+        skuDetail:getValidateCouponCode?.partNumber,
       };
 
       siebelCrmSync(crmData);
 
       return res.json({
-        message: getTransactionPoints.isSpecial ? "Congratulations! Special points earned!" : "Points Earned sucessfully",
+        message:"Warranty registered sucessfully",
         code: 200,
-        redeemed_points: Number(getTransactionPoints?.awardedPoints) || 0
+        redeemed_points:  0
       });
     } else {
       return res.json({

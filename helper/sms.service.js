@@ -2,7 +2,7 @@ const axios = require("axios")
 const { VendorApiModel } = require('../database/index.model')
 const sendSMS = async (mobile, otp) => {
   let uri = 'https://api.textlocal.in/'
-  let message = `Please use this OTP: ${otp} to login into Dhan Barse 2024 by V-Guard. Team V-Guard!`
+  let message = `Please use this OTP: ${otp} to login into warranty Utsav 2024 by V-Guard. Team V-Guard!`
   var URL = `${uri}/send/?apiKey=${process.env.SMS_API_KEY}&sender=VGUARD&numbers=${mobile}&message=${message}`
 
   let data = new VendorApiModel({ request: URL, vendor: uri })
@@ -31,7 +31,7 @@ const sendSMS = async (mobile, otp) => {
 
 const formSMS = async (mobile, value) => {
   let uri = 'https://api.textlocal.in/'
-  let message = `Thank you for participating in Onam2024 Scratchnwin by V-Guard. Please visit https://onam2024scratchnwin.vguard.in to claim your cashback. Thank you for your love and affection for V-Guard. Stay Tuned, Team V-Guard.`
+  let message = `Thank you for submitting your purchase in warranty Utsav 2024. The QR code scanned by you has been successfully uploaded in the system. Please check your email for the digital warranty certificate. Team V-Guard!.`
   var URL = `${uri}/send/?apiKey=${process.env.SMS_API_KEY2}&sender=VGUARD&numbers=${mobile}&message=${message}`
 
   let data = new VendorApiModel({ request: URL, vendor: uri })
